@@ -1,0 +1,21 @@
+{
+  "name": "pasar-backend",
+  "version": "0.1.0",
+  "private": true,
+  "main": "dist/server.js",
+  "scripts": {
+    "start": "zoltra start:ts",
+    "dev": "zoltra dev:ts"
+  },
+  "keywords": [],
+  "license": "ISC",
+  "dependencies": {
+    "zoltra": "^0.1.0-beta.5"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.2",
+    "ts-node": "^10.9.2",
+    "tslib": "^2.8.1",
+    "typescript": "^5.8.3"
+  }
+}

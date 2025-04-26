@@ -1,0 +1,4 @@
+.zoltra
+dist
+node_modules
+*.env*
