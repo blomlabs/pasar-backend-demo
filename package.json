@@ -11,7 +11,7 @@
   "keywords": [],
   "license": "ISC",
   "dependencies": {
-    "zoltra": "file:../zoltra/zoltra-0.1.0-beta.5.tgz"
+    "zoltra": "^0.1.0-beta.6"
   },
   "devDependencies": {
     "@types/node": "^22.15.2",

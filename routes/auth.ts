@@ -1,3 +1,3 @@
 import { defineRoutes } from "zoltra";
 
-export const route = defineRoutes([]);
+export const routes = defineRoutes([]);

@@ -1,4 +1,4 @@
-import { Zoltra, Logger, corsPlugin } from "zoltra";
+import { Zoltra, Logger, corsPlugin, colorText } from "zoltra";
 
 const logger = new Logger("Server");
 
@@ -11,7 +11,9 @@ async function startServer() {
     await app.start();
   } catch (error) {
     const err = error as Error;
-    logger.error(`Failed to start server: ${err.message}`);
+    logger.error(
+      `Failed to start server: ${colorText(err.message, "red", "bold")}`
+    );
     process.exit(1);
   }
 }
