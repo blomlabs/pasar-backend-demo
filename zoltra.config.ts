@@ -6,7 +6,7 @@ export default zoltraConfig({
   NODE_ENV: "development",
   error: {
     displayErrObj: false,
-    showStack: false,
+    showStack: true,
     includeErrorMessage: true,
   },
 });
