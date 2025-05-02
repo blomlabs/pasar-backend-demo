@@ -1,12 +1,10 @@
 import { defineRoutes } from "zoltra";
 import { helloController } from "../controllers/hello";
 
-const userRoutes = defineRoutes([
+export const routes = defineRoutes([
   {
     method: "GET",
-    path: "/api/hello",
+    path: "/",
     handler: helloController,
   },
 ]);
-
-export const routes = userRoutes;

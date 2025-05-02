@@ -6,12 +6,12 @@
   "scripts": {
     "start": "zoltra start:ts",
     "dev": "zoltra dev:ts",
-    "pkg": "npm i ../zoltra/zoltra-0.1.0-beta.5.tgz"
+    "pkg": "npm i ../zoltra/zoltra-0.1.0-beta.6.tgz"
   },
   "keywords": [],
   "license": "ISC",
   "dependencies": {
-    "zoltra": "^0.1.0-beta.6"
+    "zoltra": "^0.1.0-beta.7"
   },
   "devDependencies": {
     "@types/node": "^22.15.2",
