@@ -1,4 +1,5 @@
 import { Zoltra, Logger, corsPlugin, colorText } from "zoltra";
+import { errorPlugin } from "./plugins/error";
 
 const logger = new Logger("Server");
 
@@ -7,6 +8,7 @@ async function startServer() {
     const app = new Zoltra();
 
     app.register(corsPlugin());
+    app.register(errorPlugin);
 
     await app.start();
   } catch (error) {

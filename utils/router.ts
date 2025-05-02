@@ -40,7 +40,6 @@ export function getRouteBasePath(
   });
 }
 
-// Improved version that clones handlers properly
 export function prefixRoutesWithBasePath(
   routes: Route[],
   basePath: string
