@@ -11,6 +11,8 @@ async function startServer() {
     app.register(errorPlugin);
 
     await app.start();
+
+    console.log("Hello");
   } catch (error) {
     const err = error as Error;
     logger.error(
