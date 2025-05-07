@@ -12,7 +12,7 @@ async function startServer() {
 
     await app.start();
 
-    console.log("Hello");
+    // console.log("Hello");
   } catch (error) {
     const err = error as Error;
     logger.error(

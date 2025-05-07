@@ -5,7 +5,7 @@ export default zoltraConfig({
   LOG_LEVEL: "info",
   NODE_ENV: "development",
   error: {
-    displayErrObj: true,
+    displayErrObj: false,
     showStack: true,
     includeErrorMessage: true,
   },
