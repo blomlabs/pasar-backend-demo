@@ -30,14 +30,20 @@ import { ZoltraHandler } from "zoltra";
 const validateFields =
   (requiredFields: string[]): ZoltraHandler =>
   async (req, res, next) => {
-    const missingFields = requiredFields.filter(
-      (field) => !req.body[field] || req.body[field].toString().trim() === ""
-    );
+    const missingFields = requiredFields.filter((field) => {
+      const notObj = typeof req.body[field] !== "object";
+      return (
+        !req.body[field] || (notObj && req.body[field].toString().trim() === "")
+      );
+    });
 
     if (missingFields.length > 0) {
       return res.status(403).json({
-        message: "Validation Error",
-        error: `The following fields are required: ${missingFields.join(", ")}`,
+        error: "FIELD_VALIDATION_ERR",
+        success: false,
+        message: `The following fields are required: ${missingFields.join(
+          ", "
+        )}`,
       });
     }
 

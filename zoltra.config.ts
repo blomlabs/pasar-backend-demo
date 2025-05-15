@@ -11,7 +11,7 @@ export default zoltraConfig({
   },
   experimental: {
     dev: {
-      turboClient: true,
+      turboClient: false,
     },
   },
 });

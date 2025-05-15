@@ -1,5 +1,6 @@
 import { Pool, QueryResult, QueryResultRow } from "pg";
 import { RequestError } from "zoltra";
+import PostgresClient from "../instances/pg-utils";
 
 const pool = new Pool({
   user: process.env.PG_USER,
@@ -18,7 +19,7 @@ export const query = async (
     return await client.query(action, values);
   } catch (error) {
     const er = error as Error;
-    const err = new RequestError(er.message, "PgError", 500);
+    const err = new RequestError(er.message, "PgQueryError", 500);
     throw err;
   } finally {
     client.release();
@@ -29,3 +30,5 @@ export const Query = async (action: string, values?: unknown[]) => {
   const data = await query(action, values);
   return data?.rows || [];
 };
+
+export const pgClient = new PostgresClient(query);

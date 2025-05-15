@@ -3,7 +3,7 @@ import { createErrorPlugin, Logger } from "zoltra";
 export const errorPlugin = createErrorPlugin({
   name: "error-plugin",
   handler: async (err, req, res, next) => {
-    const logger = new Logger("ErrorPlugin");
+    const logger = new Logger("RequestError");
 
     try {
       let error = {
@@ -13,7 +13,7 @@ export const errorPlugin = createErrorPlugin({
         statusCode: err.statusCode,
       };
 
-      logger.error(error.name, {
+      logger.error(error.name || "Error", {
         stack: error.stack,
         message: error.message,
         name: error.name,

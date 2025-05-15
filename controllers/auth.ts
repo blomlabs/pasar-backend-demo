@@ -1,7 +1,10 @@
 import { RequestError, ZoltraHandler } from "zoltra";
-import { Query } from "../config/pg-client";
 import { comparePassword, hashPassword } from "../utils/password";
 import { signToken } from "../utils/jwt";
+import { User } from "../types/app";
+import { newUserColumns, userColumns } from "../constants/columns";
+import resMessages from "../constants/res-messages";
+import { pgClient } from "../config/pg-client";
 
 export const registerUser: ZoltraHandler = async (req, res, next) => {
   const {
@@ -14,17 +17,20 @@ export const registerUser: ZoltraHandler = async (req, res, next) => {
     gender,
     website,
     phone_number,
+    account_type,
   } = req.body;
   try {
-    const userExits = await Query(
-      "SELECT * FROM users WHERE email = $1 OR phone_number = $2",
-      [email, phone_number]
-    );
+    const userExits = await pgClient.findOne({
+      table: "users",
+      $where: "email = $1",
+      $or: "phone_number = $2",
+      values: [email, phone_number],
+    });
 
-    if (userExits?.length === 1) {
+    if (userExits?.success) {
       const error = new RequestError(
         "User Already exits",
-        "AuthenticationErr",
+        resMessages._AUTH_ERR,
         403
       );
       throw error;
@@ -32,11 +38,11 @@ export const registerUser: ZoltraHandler = async (req, res, next) => {
 
     const hashedPassword = await hashPassword(password);
 
-    const newUser = await Query(
-      `INSERT INTO users(email, firstName, lastName, password, country, state_of_origin, gender, phone_number, website)
-         VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9) 
-        `,
-      [
+    const newUser = await pgClient.insertOne<User>({
+      table: "users",
+      columns: newUserColumns,
+      returning: userColumns,
+      values: [
         email,
         firstName,
         lastName,
@@ -46,16 +52,23 @@ export const registerUser: ZoltraHandler = async (req, res, next) => {
         gender,
         phone_number,
         website,
-      ]
-    );
+        account_type,
+      ],
+    });
 
-    if (!newUser) {
-      return;
+    if (!newUser.success) {
+      const error = new RequestError(
+        "Something went wrong",
+        resMessages._AUTH_ERR,
+        401
+      );
+      throw error;
     }
 
     res.status(201).json({
+      success: true,
       message: "Registration successful",
-      data: { token: signToken(newUser[0]), user: newUser[0] },
+      data: { user: newUser.data, token: signToken(newUser.data!) },
     });
   } catch (error) {
     next(error);
@@ -65,17 +78,27 @@ export const registerUser: ZoltraHandler = async (req, res, next) => {
 export const signIn: ZoltraHandler = async (req, res, next) => {
   const { email, password } = req.body;
   try {
-    const user = await Query(
-      "SELECT id, email, password, firstName, lastName, country, state_of_origin, gender, phone_number, website FROM users WHERE email = $1",
-      [email]
-    );
+    const user = await pgClient.findOne<User>({
+      table: "users",
+      $where: "email = $1",
+      values: [email],
+      columns: [...userColumns, "password"],
+    });
 
-    if (user?.length === 0) {
-      const error = new RequestError("Users not found", "UserFetchErr", 404);
+    if (!user.success) {
+      const error = new RequestError(
+        "User not found",
+        resMessages._AUTH_ERR,
+        404
+      );
       throw error;
     }
 
-    const isMatched = await comparePassword(password, user![0].password);
+    const isMatched = await comparePassword(
+      password,
+      String(user?.data?.password)
+    );
+
     if (!isMatched) {
       const error = new RequestError(
         "Invalid password",
@@ -85,10 +108,12 @@ export const signIn: ZoltraHandler = async (req, res, next) => {
       throw error;
     }
 
-    delete user[0].password;
+    delete user?.data?.password;
 
-    const token = signToken(user[0]);
-    res.status(200).json({ message: "Sign In Successful", data: token });
+    const token = signToken(user.data as User);
+    res
+      .status(200)
+      .json({ success: true, message: "Sign In Successful", data: token });
   } catch (error) {
     next(error);
   }

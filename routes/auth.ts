@@ -18,6 +18,7 @@ export const routes = defineRoutes([
         "state_of_origin",
         "gender",
         "phone_number",
+        "account_type",
       ]),
       validateEmail,
     ],

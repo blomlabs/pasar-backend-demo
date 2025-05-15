@@ -31,6 +31,8 @@ const validateEmail: ZoltraHandler = (req, res, next) => {
   if (!email || !emailRegex.test(email)) {
     return res.status(400).json({
       message: "Invalid email format. Please provide a valid email address.",
+      success: false,
+      error: "EMAIL_VALIDATION_ERR",
     });
   }
 
