@@ -1,6 +1,6 @@
 import { RequestError } from "zoltra";
 import { Pg } from "../types/utils";
-import { getColumnPlaceholder } from "../utils/pg-utils";
+import { getColumnPlaceholder, getFieldPlaceholder } from "../utils/pg-utils";
 import { throwIfInvalid } from "../utils/global";
 
 class PostgresClient {
@@ -15,10 +15,11 @@ class PostgresClient {
     table,
     returning,
     values,
+    jsonbArr,
   }: Pg.InsertOne) {
     try {
       const selectors = columns.join(", ");
-      const valuesPlaceholder = getColumnPlaceholder(columns);
+      const valuesPlaceholder = getColumnPlaceholder(columns, jsonbArr);
       let queryString = `INSERT INTO ${table}(${selectors}) VALUES(${valuesPlaceholder})`;
 
       if (returning && returning.length >= 1) {
@@ -77,13 +78,14 @@ class PostgresClient {
   }
 
   public async findByIdAndUpdate<D = unknown>({
-    fieldToUpdate,
+    fieldToUpdates,
     values,
     table,
     objectId = "id",
     $and,
     returning_fields,
     columns = ["*"],
+    countFrom,
   }: Pg.FindByIdAndUpdate) {
     try {
       const hasLists = columns.length > 1;
@@ -98,7 +100,9 @@ class PostgresClient {
         throw error;
       }
 
-      queryString = `UPDATE ${table} SET ${fieldToUpdate} = $2 WHERE ${objectId} = $1`;
+      const fields = getFieldPlaceholder(fieldToUpdates, countFrom);
+
+      queryString = `UPDATE ${table} SET ${fields} WHERE ${objectId} = $1`;
 
       if ($and) {
         queryString += ` AND ${$and}`;
@@ -303,6 +307,78 @@ class PostgresClient {
 
       if (shouldReturnData) {
         queryString += ` RETURNING *`;
+      }
+
+      const data = await this.query(queryString, values);
+
+      if (data && data.rowCount === 0) {
+        return { success: false };
+      }
+
+      return { success: true, data: data?.rows[0] as D };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public async updateById<D = unknown>({
+    fieldToUpdates,
+    countFrom = 1,
+    $and,
+    objectId = "id",
+    table,
+    returning_fields,
+    values,
+    jsonbArr,
+  }: Pg.UpdateById) {
+    try {
+      let queryString;
+      const fields = getFieldPlaceholder(fieldToUpdates, countFrom, jsonbArr);
+
+      queryString = `UPDATE ${table} SET ${fields} WHERE ${objectId} = $1`;
+
+      if ($and) {
+        queryString += ` AND ${$and}`;
+      }
+
+      if (returning_fields && returning_fields.length > 0) {
+        const fieldsToReturn = returning_fields.join(", ");
+        queryString += ` RETURNING ${fieldsToReturn}`;
+      }
+
+      const data = await this.query(queryString, values);
+
+      if (data && data.rowCount === 0) {
+        return { success: false };
+      }
+
+      return { success: true, data: data?.rows[0] as D };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public async updateOne<D = unknown>({
+    fieldToUpdates,
+    countFrom = 1,
+    $and,
+    $where,
+    table,
+    returning_fields,
+    jsonbArr,
+    values,
+  }: Pg.UpdateOne) {
+    try {
+      const fields = getFieldPlaceholder(fieldToUpdates, countFrom, jsonbArr);
+      let queryString = `UPDATE ${table} SET ${fields} WHERE ${$where}`;
+
+      if ($and) {
+        queryString += ` AND ${$and}`;
+      }
+
+      if (returning_fields && returning_fields.length > 0) {
+        const fieldsToReturn = returning_fields.join(", ");
+        queryString += ` RETURNING ${fieldsToReturn}`;
       }
 
       const data = await this.query(queryString, values);

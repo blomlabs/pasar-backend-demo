@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import { JWT_AUTH_SECRET } from "../config/env";
 import { User } from "../types/app";
 import { fetchAuthUser } from "./shared";
+import resMessages from "../constants/res-messages";
 
 export const authorizeUser: ZoltraHandler = async (req, res, next) => {
   try {
@@ -22,13 +23,13 @@ export const authorizeUser: ZoltraHandler = async (req, res, next) => {
       });
     }
 
-    const decoded = jwt.verify(token, String(JWT_AUTH_SECRET)) as User;
+    const decoded = jwt.verify(token.trim(), String(JWT_AUTH_SECRET)) as User;
 
     const user = await fetchAuthUser(decoded.email);
 
     if (!user)
       return res.status(404).json({
-        error: "Unauthorized",
+        error: resMessages._404_ERR,
         success: false,
         message: "User not found",
       });
@@ -37,6 +38,6 @@ export const authorizeUser: ZoltraHandler = async (req, res, next) => {
 
     await next();
   } catch (error) {
-    next(error);
+    throw error;
   }
 };

@@ -33,6 +33,8 @@ export interface Product {
   updated_at: string;
   color: string;
   brand_id: number;
+  quantity: number;
+  shipping_fee: number;
 }
 
 export interface CartProps {
@@ -58,3 +60,28 @@ export interface CategoryProps {
   created_at: string;
   updated_at: string;
 }
+
+export interface Feedback {
+  id: number;
+  product_id: number;
+  comment: string;
+  rating: number;
+  username: string;
+  profile_image: object;
+  created_at: string;
+  user_id: number;
+}
+
+export interface Orders {
+  id: number;
+  shipping_fees: number;
+  total: number;
+  user_id: number;
+  items: CartItemProps[];
+  order_number: string;
+  status: "pending" | "cancelled" | "delivered";
+  payment_method: "fiat" | "crypto";
+  created_at: string;
+}
+
+export type PaymentMethod = "crypto" | "fiat";

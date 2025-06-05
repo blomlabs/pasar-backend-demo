@@ -13,6 +13,11 @@ export default zoltraConfig({
     dev: {
       turboClient: false,
     },
+    router: {
+      cache: {
+        enabled: true,
+      },
+    },
   },
 });
 // TODO: Allow terminal input - r for server restart, -s for stop

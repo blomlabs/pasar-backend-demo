@@ -3,11 +3,18 @@ import {
   createProduct,
   deleteProduct,
   fetchProductForSeller,
+  getBrands,
   getProduct,
+  getProductByBrand,
   getProducts,
+  editProduct,
+  getFeedback,
+  getProductFeedBacks,
+  rateProduct,
 } from "../controllers/product";
 import { authorizeUser } from "../middleware/authorize-user";
 import validateFields from "../middleware/vaildateFields";
+import { useAuthToken } from "../middleware/useauth";
 
 export const routes = defineRoutes([
   {
@@ -24,8 +31,17 @@ export const routes = defineRoutes([
         "description",
         "images",
         "color",
-        "brand_id",
+        "brand",
       ]),
+    ],
+  },
+  {
+    path: "/feedbacks/comment",
+    method: "POST",
+    handler: rateProduct,
+    middleware: [
+      authorizeUser,
+      validateFields(["productId", "comment", "rating"]),
     ],
   },
   {
@@ -37,11 +53,38 @@ export const routes = defineRoutes([
     method: "GET",
     path: "/:slug",
     handler: getProduct,
+    middleware: [useAuthToken],
   },
   {
     method: "GET",
     path: "/seller/:seller",
     handler: fetchProductForSeller,
+  },
+  {
+    method: "GET",
+    path: "/brands/all",
+    handler: getBrands,
+  },
+  {
+    method: "GET",
+    path: "/brands/single/:brand",
+    handler: getProductByBrand,
+  },
+  {
+    method: "GET",
+    path: "/feedbacks/all",
+    handler: getFeedback,
+  },
+  {
+    method: "GET",
+    path: "/feedbacks/product/:productId",
+    handler: getProductFeedBacks,
+  },
+  {
+    method: "PATCH",
+    path: "/edit/:productId",
+    handler: editProduct,
+    middleware: [authorizeUser],
   },
   {
     method: "DELETE",

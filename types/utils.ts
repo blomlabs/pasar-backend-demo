@@ -33,12 +33,13 @@ export namespace Pg {
 
   export interface FindByIdAndUpdate {
     returning_fields?: string[];
-    fieldToUpdate: string;
+    fieldToUpdates: string[];
     table: string;
     objectId?: string;
     values: any[];
     $and?: string;
     columns?: string[];
+    countFrom?: number;
   }
 
   export interface FindById {
@@ -94,5 +95,33 @@ export namespace Pg {
     values: any[];
     columns: string[];
     returning?: string[];
+    /** Indexies of jsonb value */
+    jsonbArr?: number[];
+  }
+
+  export interface UpdateById {
+    returning_fields?: string[];
+    fieldToUpdates: string[];
+    table: string;
+    objectId?: string;
+    values: any[];
+    $and?: string;
+    columns?: string[];
+    countFrom?: number;
+    /** Indexies of jsonb value */
+    jsonbArr?: number[];
+  }
+
+  export interface UpdateOne {
+    returning_fields?: string[];
+    fieldToUpdates: string[];
+    table: string;
+    $where: string;
+    values: any[];
+    $and?: string;
+    columns?: string[];
+    countFrom?: number;
+    /** Indexies of jsonb value */
+    jsonbArr?: number[];
   }
 }

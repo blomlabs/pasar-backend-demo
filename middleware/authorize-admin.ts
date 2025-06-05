@@ -46,6 +46,6 @@ export const authorizeAdmin: ZoltraHandler = async (req, res, next) => {
 
     await next();
   } catch (error) {
-    next(error);
+    throw error;
   }
 };

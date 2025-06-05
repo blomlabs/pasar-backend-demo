@@ -14,7 +14,7 @@ export const grantPermission: ZoltraHandler = async (req, res, next) => {
     const data = await pgClient.findByIdAndUpdate<User>({
       table: "users",
       values: [userId, val],
-      fieldToUpdate: "is_admin",
+      fieldToUpdates: ["is_admin"],
       columns: ["is_admin", "id"],
     });
 
@@ -39,11 +39,11 @@ export const grantPermission: ZoltraHandler = async (req, res, next) => {
 
 export const grantSellerPrivilege: ZoltraHandler = async (req, res, next) => {
   const { userId } = req.body;
-  // const { remove } = req.query;
+  // req.on
   try {
     const data = await pgClient.findByIdAndUpdate<User>({
       table: "users",
-      fieldToUpdate: "account_type",
+      fieldToUpdates: ["account_type"],
       values: [userId, "seller"],
       columns: ["id", "account_type"],
       returning_fields: ["account_type"],
